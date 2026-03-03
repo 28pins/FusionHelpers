@@ -1,0 +1,11 @@
+{
+  "autodeskProduct": "Fusion360",
+  "type": "addin",
+  "id": "com.28pins.gearGenerator",
+  "author": "28pins",
+  "description": "Multi-gear generator (imperial/metric default imperial) with printable approximations",
+  "version": "3.2.0",
+  "runOnStartup": false,
+  "supportedOS": "windows|mac",
+  "editEnabled": true
+}
