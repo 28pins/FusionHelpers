@@ -42,6 +42,19 @@ A utility script for creating 2D and 3D splines from coordinate points. Perfect 
 
 ---
 
+### 3. Export3MF – Bulk Body Exporter
+
+A utility script that exports selected Fusion 360 bodies as `.3mf` files into a subfolder of the user's `Downloads` directory.
+
+**Features:**
+- Multiple body selection in a single run
+- Exports each body as an individual `.3mf` file
+- Prompts for a folder name and creates it automatically inside `~/Downloads/`
+
+📁 [View Export3MF Documentation](addins/Export3MF/README.md)
+
+---
+
 ## Quick Start
 
 ### Installation
@@ -69,6 +82,12 @@ A utility script for creating 2D and 3D splines from coordinate points. Perfect 
    - Click the **+** icon next to *My Scripts*
    - Navigate to `addins/BlueprintSplineHelper/` and click **Select**
    - Select it from the list and click **Run** when needed
+
+   **For Export3MF (Script):**
+   - Click the **Scripts** tab
+   - Click the **+** icon next to *My Scripts*
+   - Navigate to `addins/Export3MF/` and click **Select**
+   - Select the bodies to export, then select the script from the list and click **Run**
 
 ---
 
@@ -103,6 +122,13 @@ A utility script for creating 2D and 3D splines from coordinate points. Perfect 
 5. Enter corresponding Y coordinates: `0, 3, 8, 7, 2`
 6. Click **OK** – spline is created through the points
 
+### Exporting Bodies to 3MF
+
+1. Select the bodies to export in the viewport or browser
+2. Run **Export3MF** from the Scripts panel
+3. Enter a folder name (e.g. `my_parts`) when prompted
+4. Files are saved to `~/Downloads/my_parts/<body_name>.3mf`
+
 ---
 
 ## Project Structure
@@ -126,10 +152,15 @@ FusionHelpers/
     │       ├── worm.py             # Worm set logic
     │       └── utils.py            # Shared utilities
     │
-    └── BlueprintSplineHelper/      # Coordinate spline creator script
+    ├── BlueprintSplineHelper/      # Coordinate spline creator script
+    │   ├── LICENSE                 # Component-specific license
+    │   ├── README.md               # Detailed documentation
+    │   └── BlueprintSplineHelper.py # Main script
+    │
+    └── Export3MF/                  # Bulk body-to-3MF exporter script
         ├── LICENSE                 # Component-specific license
         ├── README.md               # Detailed documentation
-        └── BlueprintSplineHelper.py # Main script
+        └── Export3MF.py            # Main script
 ```
 
 ---
