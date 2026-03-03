@@ -56,6 +56,11 @@ def _rot(x, y, angle):
     return c * x - s * y, s * x + c * y
 
 
+def rotate2d(x, y, angle):
+    """Public alias for _rot – rotate point (x, y) CCW by *angle* radians."""
+    return _rot(x, y, angle)
+
+
 # ---------------------------------------------------------------------------
 # Complete spur-gear profile (all N teeth, CCW, mm)
 # ---------------------------------------------------------------------------

@@ -51,7 +51,7 @@ def create_helical(comp, params):
         # Profile sketch on that plane
         sk = comp.sketches.add(plane)
         pts_mm = utils.spur_profile_pts(m, z, alpha, bl, tr)
-        pts_rotated = [utils._rot(x, y, twist) for (x, y) in pts_mm]
+        pts_rotated = [utils.rotate2d(x, y, twist) for (x, y) in pts_mm]
         oc = utils.pts_to_object_collection(pts_rotated)
         spline = sk.sketchCurves.sketchFittedSplines.add(oc)
         spline.isClosed = True
