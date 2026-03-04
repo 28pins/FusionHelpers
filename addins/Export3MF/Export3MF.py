@@ -101,7 +101,7 @@ def run(context):
             body_collection.add(body)
             try:
                 component = body.parentComponent
-            except (AttributeError, RuntimeError) as exc:
+            except AttributeError as exc:
                 # Some platform builds throw generic exceptions when the owning
                 # component is not available; catch broadly to keep export alive.
                 print(f'[Export3MF] Unable to read parentComponent: {exc}')
@@ -160,15 +160,15 @@ def run(context):
                     if opts:
                         try:
                             opts.filename = file_path
-                        except Exception as exc:
+                        except (TypeError, AttributeError, RuntimeError) as exc:
                             print(f'[Export3MF] Unable to set filename: {exc}')
                         try:
                             opts.meshRefinement = adsk.fusion.MeshRefinementSettings.MeshRefinementMedium
-                        except Exception as exc:
+                        except (TypeError, AttributeError, RuntimeError) as exc:
                             print(f'[Export3MF] Unable to set mesh refinement: {exc}')
                         try:
                             opts.sendToPrintUtility = False
-                        except Exception as exc:
+                        except (TypeError, AttributeError, RuntimeError) as exc:
                             print(f'[Export3MF] Unable to disable print utility: {exc}')
                         return opts
             return None
