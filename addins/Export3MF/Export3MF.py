@@ -111,7 +111,7 @@ def run(context):
             else:
                 used_names[safe_name] = 0
             file_path = os.path.join(downloads_dir, f'{safe_name}.3mf')
-            options = export_mgr.createC3MFExportOptions(body, file_path)
+            options = export_mgr.create3MFExportOptions(body, file_path)
             export_mgr.execute(options)
 
         ui.messageBox(f'Exported {len(selected_bodies)} bodies to {downloads_dir}')
