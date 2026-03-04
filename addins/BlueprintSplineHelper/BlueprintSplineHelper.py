@@ -17,19 +17,18 @@ def run(context):
             return
 
         # Ask the user whether to create a 2D or 3D spline
-        dropdown_items = ["2D Spline (X, Y only)", "3D Spline (X, Y, Z)"]
-        selected_option = ui.inputBox(
-            "Choose the type of spline you want to create:\n1. 2D Spline (On a selected plane)\n2. 3D Spline (Freeform in 3D space)", 
-            "Spline Type Selection", 
-            dropdown_items[0], 
-            dropdown_items
+        result = ui.messageBox(
+            "Choose the type of spline you want to create:\n\n"
+            "Click 'OK' for 2D Spline (on a selected plane)\n"
+            "Click 'Cancel' for 3D Spline (freeform in 3D space)",
+            "Spline Type Selection",
+            adsk.core.MessageBoxButtonTypes.OKCancelButtonType,
+            adsk.core.MessageBoxIconTypes.QuestionIconType
         )
-        if not selected_option:
-            ui.messageBox("No selection made. Exiting script.")
-            return
-        
+
         # Determine if the selection is for 2D or 3D
-        is_3D = selected_option == dropdown_items[1]  # True if 3D Spline is selected
+        # OK button returns 0, Cancel button returns 1
+        is_3D = (result == adsk.core.DialogResults.DialogCancel)
 
         # If 2D, allow the user to select a plane (not needed for 3D)
         selected_plane = None
@@ -41,32 +40,32 @@ def run(context):
             selected_plane = plane_selection.entity
 
         # Ask for X and Y points (and Z if 3D is selected)
-        x_input = ui.inputBox(
+        x_input, cancelled = ui.inputBox(
             "Enter a list of X-coordinates, separated by spaces or commas (e.g. 0 1 2):",
             "Input X Points",
             "0,1,2"
         )
-        if not x_input:
+        if cancelled or not x_input:
             ui.messageBox("No X points entered. Exiting script.")
             return
 
-        y_input = ui.inputBox(
+        y_input, cancelled = ui.inputBox(
             "Enter a list of Y-coordinates, separated by spaces or commas (e.g. 0 1 2):",
             "Input Y Points",
             "0,1,2"
         )
-        if not y_input:
+        if cancelled or not y_input:
             ui.messageBox("No Y points entered. Exiting script.")
             return
 
         z_input = []
         if is_3D:
-            z_input_str = ui.inputBox(
+            z_input_str, cancelled = ui.inputBox(
                 "Enter a list of Z-coordinates (for 3D splines), separated by spaces or commas (e.g. 0 0 1):",
                 "Input Z Points",
                 "0,0,0"
             )
-            if not z_input_str:
+            if cancelled or not z_input_str:
                 ui.messageBox("No Z points entered. Exiting script.")
                 return
             z_input = z_input_str.replace(',', ' ').split()  # Parse Z-coordinates
@@ -80,7 +79,7 @@ def run(context):
         
         # If 3D spline, parse Z input; otherwise, default Z to 0
         if is_3D:
-            z_points = parse_input(z_input)
+            z_points = parse_input(z_input_str)
             if len(x_points) != len(y_points) or len(x_points) != len(z_points):
                 ui.messageBox("The number of X, Y, and Z coordinates must match. Exiting script.")
                 return

@@ -69,8 +69,7 @@ def run(context):
             _CMD_ID,
             "Gear Generator",
             "Generate parametric spur, helical, internal, rack, bevel or worm gears\n"
-            "with optional FDM 3-D printing optimisation.",
-            os.path.join(_dir, "resources"),
+            "with optional FDM 3-D printing optimisation."
         )
 
         on_created = _CommandCreatedHandler()
