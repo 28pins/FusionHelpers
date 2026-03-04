@@ -102,6 +102,8 @@ def run(context):
             try:
                 component = body.parentComponent
             except Exception as exc:
+                # Some platform builds throw generic exceptions when the owning
+                # component is not available; catch broadly to keep export alive.
                 print(f'[Export3MF] Unable to read parentComponent: {exc}')
                 component = None
             factories = []
@@ -140,18 +142,21 @@ def run(context):
 
             # Try each factory with (target, path) then (target) to handle
             # differing overloads between platforms.
-            for factory in factories:
+            def _try_factory(factory, target):
                 factory_name = getattr(factory, '__name__', None) or repr(factory)
-                for target in (body_collection, component) if component else (body_collection,):
+                try:
+                    return factory(target, file_path)
+                except Exception as exc:
+                    print(f'[Export3MF] Factory {factory_name} with path failed: {exc}')
                     try:
-                        opts = factory(target, file_path)
-                    except Exception as exc:
-                        print(f'[Export3MF] Factory {factory_name} with path failed: {exc}')
-                        try:
-                            opts = factory(target)
-                        except Exception as exc2:
-                            print(f'[Export3MF] Factory {factory_name} without path failed: {exc2}')
-                            opts = None
+                        return factory(target)
+                    except Exception as exc2:
+                        print(f'[Export3MF] Factory {factory_name} without path failed: {exc2}')
+                        return None
+
+            for factory in factories:
+                for target in (body_collection, component) if component else (body_collection,):
+                    opts = _try_factory(factory, target)
                     if opts:
                         try:
                             opts.filename = file_path
