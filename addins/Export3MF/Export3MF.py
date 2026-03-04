@@ -106,7 +106,9 @@ def run(context):
                 component = None
             factories = []
 
-            # Preferred APIs first (C3MF on macOS, 3MF elsewhere), with fallbacks
+            # Preferred APIs first (C3MF on macOS, 3MF elsewhere), with fallbacks.
+            # C3MF is Autodesk’s newer container export; some macOS builds expose
+            # only that factory, while Windows and older builds expose create3MF.
             if hasattr(export_mgr, 'createC3MFExportOptions'):
                 factories.append(export_mgr.createC3MFExportOptions)
             if hasattr(export_mgr, 'create3MFExportOptions'):
