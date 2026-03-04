@@ -137,17 +137,14 @@ def run(context):
                             opts.filename = file_path
                         except Exception as exc:
                             print(f'[Export3MF] Unable to set filename: {exc}')
-                            pass
                         try:
                             opts.meshRefinement = adsk.fusion.MeshRefinementSettings.MeshRefinementMedium
                         except Exception as exc:
                             print(f'[Export3MF] Unable to set mesh refinement: {exc}')
-                            pass
                         try:
                             opts.sendToPrintUtility = False
                         except Exception as exc:
                             print(f'[Export3MF] Unable to disable print utility: {exc}')
-                            pass
                         return opts
             return None
 
