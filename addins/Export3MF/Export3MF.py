@@ -115,7 +115,7 @@ def run(context):
                             target,
                             path,
                             adsk.fusion.MeshFileFormat.MeshFileFormat3MF)
-                    except:
+                    except Exception:
                         return export_mgr.createMeshExportOptions(target, path)
                 factories.append(_mesh_factory)
 
@@ -125,23 +125,23 @@ def run(context):
                 for target in (bodies, component) if component else (bodies,):
                     try:
                         opts = factory(target, file_path)
-                    except:
+                    except Exception:
                         try:
                             opts = factory(target)
-                        except:
+                        except Exception:
                             opts = None
                     if opts:
                         try:
                             opts.filename = file_path
-                        except:
+                        except Exception:
                             pass
                         try:
                             opts.meshRefinement = adsk.fusion.MeshRefinementSettings.MeshRefinementMedium
-                        except:
+                        except Exception:
                             pass
                         try:
                             opts.sendToPrintUtility = False
-                        except:
+                        except Exception:
                             pass
                         return opts
             return None
