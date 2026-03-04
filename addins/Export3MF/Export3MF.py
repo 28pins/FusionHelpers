@@ -99,7 +99,11 @@ def run(context):
         def _create_3mf_options(body, file_path):
             body_collection = adsk.core.ObjectCollection.create()
             body_collection.add(body)
-            component = getattr(body, 'parentComponent', None)
+            try:
+                component = body.parentComponent
+            except Exception as exc:
+                print(f'[Export3MF] Unable to read parentComponent: {exc}')
+                component = None
             factories = []
 
             # Preferred APIs first (C3MF on macOS, 3MF elsewhere), with fallbacks
@@ -117,9 +121,19 @@ def run(context):
                             adsk.fusion.MeshFileFormat.MeshFileFormat3MF)
                     except Exception as exc:
                         # Some macOS builds omit the explicit format overload; fall back to
-                        # the simpler signature to keep the export functional.
+                        # the simpler signature and enforce format if possible.
                         print(f'[Export3MF] Mesh factory with explicit format failed: {exc}')
-                        return export_mgr.createMeshExportOptions(target, path)
+                        try:
+                            opts = export_mgr.createMeshExportOptions(target, path)
+                        except Exception as exc2:
+                            print(f'[Export3MF] Mesh factory fallback without format failed: {exc2}')
+                            return None
+                        try:
+                            opts.meshFileFormat = adsk.fusion.MeshFileFormat.MeshFileFormat3MF
+                        except Exception as exc3:
+                            print(f'[Export3MF] Mesh factory fallback cannot set 3MF format: {exc3}')
+                            return None
+                        return opts
                 factories.append(_mesh_factory)
 
             # Try each factory with (target, path) then (target) to handle
