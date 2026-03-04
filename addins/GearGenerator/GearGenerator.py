@@ -16,6 +16,7 @@ import adsk.core
 import adsk.fusion
 import adsk.cam
 import traceback
+import math
 import os
 import sys
 
@@ -141,7 +142,7 @@ class _CommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             inputs.addValueInput(
                 "module_mm", "Module (mm)",
                 "mm",
-                adsk.core.ValueInput.createByReal(DEFAULT_MODULE))
+                adsk.core.ValueInput.createByReal(utils.mm_to_cm(DEFAULT_MODULE)))
 
             # ── Common tooth parameters ───────────────────────────────────
             inputs.addIntegerSpinnerCommandInput(
@@ -153,7 +154,7 @@ class _CommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             inputs.addValueInput(
                 "pressure_angle", "Pressure Angle (°)",
                 "deg",
-                adsk.core.ValueInput.createByReal(20.0))
+                adsk.core.ValueInput.createByReal(math.radians(20.0)))
             inputs.addValueInput(
                 "bore_dia", "Bore Diameter",
                 "mm",
@@ -167,7 +168,7 @@ class _CommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             helix_in = inputs.addValueInput(
                 "helix_angle", "Helix Angle (°)",
                 "deg",
-                adsk.core.ValueInput.createByReal(15.0))
+                adsk.core.ValueInput.createByReal(math.radians(15.0)))
             helix_in.tooltip = "Lead helix angle for helical gears only."
 
             # ── Worm-specific ────────────────────────────────────────────
@@ -248,7 +249,8 @@ def _refresh_visibility(inputs):
     pinion_in = inputs.itemById("num_teeth_pinion")
     bore_in   = inputs.itemById("bore_dia")
 
-    if not all([gt_in, units_in, fdm_in, nozzle_in]):
+    if not all([gt_in, units_in, fdm_in, nozzle_in, dp_in, mm_in,
+                helix_in, starts_in, pinion_in, bore_in]):
         return
 
     gear_type  = gt_in.selectedItem.name    if gt_in.selectedItem else ""
@@ -318,11 +320,11 @@ def _generate(inputs):
         "module_mm":          m_mm,
         "num_teeth":          inputs.itemById("num_teeth").value,
         "face_width_mm":      inputs.itemById("face_width").value * 10.0,
-        "pressure_angle_deg": inputs.itemById("pressure_angle").value,
+        "pressure_angle_deg": math.degrees(inputs.itemById("pressure_angle").value),
         "bore_dia_mm":        inputs.itemById("bore_dia").value * 10.0,
         "backlash_mm":        inputs.itemById("backlash").value * 10.0,
         "tip_relief_mm":      0.0,
-        "helix_angle_deg":    inputs.itemById("helix_angle").value,
+        "helix_angle_deg":    math.degrees(inputs.itemById("helix_angle").value),
         "num_starts":         inputs.itemById("num_starts").value,
         "num_teeth_pinion":   inputs.itemById("num_teeth_pinion").value,
     }
