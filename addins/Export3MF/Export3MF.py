@@ -94,6 +94,58 @@ def run(context):
                 return
             selected_bodies = all_bodies
 
+        # Helper to create 3MF export options in a way that matches the
+        # available Fusion API surface on macOS and Windows.
+        def _create_3mf_options(body, file_path):
+            bodies = adsk.core.ObjectCollection.create()
+            bodies.add(body)
+            component = getattr(body, 'parentComponent', None)
+            factories = []
+
+            # Preferred APIs first (C3MF on macOS, 3MF elsewhere), with fallbacks
+            if hasattr(export_mgr, 'createC3MFExportOptions'):
+                factories.append(export_mgr.createC3MFExportOptions)
+            if hasattr(export_mgr, 'create3MFExportOptions'):
+                factories.append(export_mgr.create3MFExportOptions)
+            if hasattr(export_mgr, 'createMeshExportOptions'):
+                # Mesh export can also target 3MF when other factories are missing
+                def _mesh_factory(target, path=None):
+                    try:
+                        return export_mgr.createMeshExportOptions(
+                            target,
+                            path,
+                            adsk.fusion.MeshFileFormat.MeshFileFormat3MF)
+                    except:
+                        return export_mgr.createMeshExportOptions(target, path)
+                factories.append(_mesh_factory)
+
+            # Try each factory with (target, path) then (target) to handle
+            # differing overloads between platforms.
+            for factory in factories:
+                for target in (bodies, component) if component else (bodies,):
+                    try:
+                        opts = factory(target, file_path)
+                    except:
+                        try:
+                            opts = factory(target)
+                        except:
+                            opts = None
+                    if opts:
+                        try:
+                            opts.filename = file_path
+                        except:
+                            pass
+                        try:
+                            opts.meshRefinement = adsk.fusion.MeshRefinementSettings.MeshRefinementMedium
+                        except:
+                            pass
+                        try:
+                            opts.sendToPrintUtility = False
+                        except:
+                            pass
+                        return opts
+            return None
+
         # Export each body.
         used_names = {}
         for body in selected_bodies:
@@ -106,7 +158,10 @@ def run(context):
             else:
                 used_names[safe_name] = 0
             file_path = os.path.join(downloads_dir, f'{safe_name}.3mf')
-            options = export_mgr.create3MFExportOptions(body, file_path)
+            options = _create_3mf_options(body, file_path)
+            if not options:
+                ui.messageBox('Fusion 360 could not create 3MF export options on this platform.')
+                return
             export_mgr.execute(options)
 
         ui.messageBox(f'Exported {len(selected_bodies)} bodies to {downloads_dir}')
