@@ -131,8 +131,8 @@ class _CommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             # ── Units ────────────────────────────────────────────────────
             units_in = inputs.addButtonRowCommandInput(
                 "units", "Units", False)
-            units_in.listItems.add("Imperial", True,  "")
-            units_in.listItems.add("Metric",   False, "")
+            units_in.listItems.add("Imperial", True)
+            units_in.listItems.add("Metric",   False)
 
             # ── Module / Diametral-Pitch ──────────────────────────────────
             inputs.addValueInput(
