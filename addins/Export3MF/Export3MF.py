@@ -56,7 +56,7 @@ def run(context):
         default_folder = f'{acronym}_v{version_num}'
         folder_name, cancelled = ui.inputBox('Enter a folder name for 3MF exports:', 'Export Folder Name', default_folder)
         if cancelled or not folder_name:
-            ui.messageBox('No folder name provided')
+            ui.messageBox('No name, no magic. Please enter a folder name to continue.')
             return
 
         # Determine the Downloads directory.
@@ -78,7 +78,7 @@ def run(context):
                         all_bodies.append(body)
 
             if not all_bodies:
-                ui.messageBox('No bodies found in the active design.')
+                ui.messageBox('I couldn’t find any visible bodies in this design to share with you.')
                 return
 
             result = ui.messageBox(
@@ -160,7 +160,7 @@ def run(context):
             file_path = os.path.join(downloads_dir, f'{safe_name}.3mf')
             options = _create_3mf_options(body, file_path)
             if not options:
-                ui.messageBox('Fusion 360 could not create 3MF export options on this platform.')
+                ui.messageBox('Hmm… I tried a few different export paths, but 3MF isn’t available here.')
                 return
             export_mgr.execute(options)
 
