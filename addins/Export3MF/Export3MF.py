@@ -97,8 +97,8 @@ def run(context):
         # Helper to create 3MF export options in a way that matches the
         # available Fusion API surface on macOS and Windows.
         def _create_3mf_options(body, file_path):
-            bodies = adsk.core.ObjectCollection.create()
-            bodies.add(body)
+            body_collection = adsk.core.ObjectCollection.create()
+            body_collection.add(body)
             component = getattr(body, 'parentComponent', None)
             factories = []
 
@@ -116,6 +116,8 @@ def run(context):
                             path,
                             adsk.fusion.MeshFileFormat.MeshFileFormat3MF)
                     except Exception as exc:
+                        # Some macOS builds omit the explicit format overload; fall back to
+                        # the simpler signature to keep the export functional.
                         print(f'[Export3MF] Mesh factory with explicit format failed: {exc}')
                         return export_mgr.createMeshExportOptions(target, path)
                 factories.append(_mesh_factory)
@@ -124,7 +126,7 @@ def run(context):
             # differing overloads between platforms.
             for factory in factories:
                 factory_name = getattr(factory, '__name__', None) or repr(factory)
-                for target in (bodies, component) if component else (bodies,):
+                for target in (body_collection, component) if component else (body_collection,):
                     try:
                         opts = factory(target, file_path)
                     except Exception as exc:
