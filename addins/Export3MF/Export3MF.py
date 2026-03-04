@@ -115,22 +115,24 @@ def run(context):
                             target,
                             path,
                             adsk.fusion.MeshFileFormat.MeshFileFormat3MF)
-                    except Exception:
+                    except Exception as exc:
+                        print(f'[Export3MF] Mesh factory with explicit format failed: {exc}')
                         return export_mgr.createMeshExportOptions(target, path)
                 factories.append(_mesh_factory)
 
             # Try each factory with (target, path) then (target) to handle
             # differing overloads between platforms.
             for factory in factories:
+                factory_name = getattr(factory, '__name__', None) or repr(factory)
                 for target in (bodies, component) if component else (bodies,):
                     try:
                         opts = factory(target, file_path)
                     except Exception as exc:
-                        print(f'[Export3MF] Factory {getattr(factory, "__name__", factory)} with path failed: {exc}')
+                        print(f'[Export3MF] Factory {factory_name} with path failed: {exc}')
                         try:
                             opts = factory(target)
                         except Exception as exc2:
-                            print(f'[Export3MF] Factory {getattr(factory, "__name__", factory)} without path failed: {exc2}')
+                            print(f'[Export3MF] Factory {factory_name} without path failed: {exc2}')
                             opts = None
                     if opts:
                         try:
