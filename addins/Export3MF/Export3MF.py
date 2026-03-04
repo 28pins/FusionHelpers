@@ -125,23 +125,28 @@ def run(context):
                 for target in (bodies, component) if component else (bodies,):
                     try:
                         opts = factory(target, file_path)
-                    except Exception:
+                    except Exception as exc:
+                        print(f'[Export3MF] Factory {getattr(factory, "__name__", factory)} with path failed: {exc}')
                         try:
                             opts = factory(target)
-                        except Exception:
+                        except Exception as exc2:
+                            print(f'[Export3MF] Factory {getattr(factory, "__name__", factory)} without path failed: {exc2}')
                             opts = None
                     if opts:
                         try:
                             opts.filename = file_path
-                        except Exception:
+                        except Exception as exc:
+                            print(f'[Export3MF] Unable to set filename: {exc}')
                             pass
                         try:
                             opts.meshRefinement = adsk.fusion.MeshRefinementSettings.MeshRefinementMedium
-                        except Exception:
+                        except Exception as exc:
+                            print(f'[Export3MF] Unable to set mesh refinement: {exc}')
                             pass
                         try:
                             opts.sendToPrintUtility = False
-                        except Exception:
+                        except Exception as exc:
+                            print(f'[Export3MF] Unable to disable print utility: {exc}')
                             pass
                         return opts
             return None
