@@ -98,9 +98,9 @@ def run(context):
             return
 
         # Generate 3D points from the input lists
-        points = []
+        points = adsk.core.ObjectCollection.create()
         for x, y, z in zip(x_points, y_points, z_points):
-            points.append(adsk.core.Point3D.create(x, y, z))
+            points.add(adsk.core.Point3D.create(x, y, z))
         pnt = 10
         # Create a new sketch for 2D or direct curves for 3D
         if not is_3D:  # 2D Spline
