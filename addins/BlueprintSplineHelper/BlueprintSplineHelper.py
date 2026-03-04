@@ -106,11 +106,7 @@ def run(context):
         if not is_3D:  # 2D Spline
             sketch = root_comp.sketches.add(selected_plane)
             sketch.sketchCurves.sketchFittedSplines.add(points)
-        else:  # 3D Spline – Fusion 360 has no standalone 3D-spline API in
-               # script mode; use an XY-plane sketch with the supplied Point3D
-               # objects (Z coordinates are stored but the spline is constrained
-               # to the sketch plane).  For a true 3D curve, use the Fusion 360
-               # Patch workspace → 3D Sketch after running this script.
+        else:  
             sketch = root_comp.sketches.add(root_comp.xYConstructionPlane)
             sketch.sketchCurves.sketchFittedSplines.add(points)
         pnt = 11
