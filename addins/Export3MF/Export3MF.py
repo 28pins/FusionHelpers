@@ -101,7 +101,7 @@ def run(context):
             body_collection.add(body)
             try:
                 component = body.parentComponent
-            except Exception as exc:
+            except (AttributeError, RuntimeError) as exc:
                 # Some platform builds throw generic exceptions when the owning
                 # component is not available; catch broadly to keep export alive.
                 print(f'[Export3MF] Unable to read parentComponent: {exc}')
@@ -123,18 +123,18 @@ def run(context):
                             target,
                             path,
                             adsk.fusion.MeshFileFormat.MeshFileFormat3MF)
-                    except Exception as exc:
+                    except (TypeError, AttributeError, RuntimeError) as exc:
                         # Some macOS builds omit the explicit format overload; fall back to
                         # the simpler signature and enforce format if possible.
                         print(f'[Export3MF] Mesh factory with explicit format failed: {exc}')
                         try:
                             opts = export_mgr.createMeshExportOptions(target, path)
-                        except Exception as exc2:
+                        except (TypeError, AttributeError, RuntimeError) as exc2:
                             print(f'[Export3MF] Mesh factory fallback without format failed: {exc2}')
                             return None
                         try:
                             opts.meshFileFormat = adsk.fusion.MeshFileFormat.MeshFileFormat3MF
-                        except Exception as exc3:
+                        except (TypeError, AttributeError, RuntimeError) as exc3:
                             print(f'[Export3MF] Mesh factory fallback cannot set 3MF format: {exc3}')
                             return None
                         return opts
@@ -146,11 +146,11 @@ def run(context):
                 factory_name = getattr(factory, '__name__', None) or repr(factory)
                 try:
                     return factory(target, file_path)
-                except Exception as exc:
+                except (TypeError, AttributeError, RuntimeError) as exc:
                     print(f'[Export3MF] Factory {factory_name} with path failed: {exc}')
                     try:
                         return factory(target)
-                    except Exception as exc2:
+                    except (TypeError, AttributeError, RuntimeError) as exc2:
                         print(f'[Export3MF] Factory {factory_name} without path failed: {exc2}')
                         return None
 
